@@ -1,6 +1,7 @@
 # import python modules
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+
 from csv import DictWriter
 import requests
 import time
@@ -9,7 +10,7 @@ from datetime import date
 from datetime import datetime
 from os import getenv
 from dotenv import load_dotenv
-
+from pyotp import *
 
 
 # define selenium driver
@@ -22,6 +23,7 @@ driver = webdriver.Chrome(options=chrome_options)
 load_dotenv()
 usernamebb=getenv('USERNAMEBB')
 passwordbb=getenv('PASSBB')
+totp=TOTP(getenv('TOTP'))
 repattern="(\d+,)?\d+.\d+ GB"
 bucketsizes=[]
 today = date.today()
@@ -43,7 +45,8 @@ def bb_login_otp():
     #OTP check
     try:
         if driver.find_element_by_css_selector("h3.sign-in-form-title").text == "Two-Factor Verification":
-            driver.find_element_by_class_name("code-field").send_keys(input("Enter OTP:"))
+            token = totp.now()
+            driver.find_element_by_class_name("code-field").send_keys(token)
             cb_otp = driver.find_element_by_class_name("bz-switch-circle").click()
             time.sleep(1)
             driver.find_element_by_css_selector("button.bz-btn.bz-btn-blue.bz-btn-lg").click()
