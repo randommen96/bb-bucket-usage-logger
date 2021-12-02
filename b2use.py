@@ -11,7 +11,7 @@ from datetime import datetime
 from os import getenv
 from dotenv import load_dotenv
 from pyotp import *
-
+import telegram_send
 
 # define selenium driver
 chrome_options = Options()
@@ -24,7 +24,7 @@ load_dotenv()
 usernamebb=getenv('USERNAMEBB')
 passwordbb=getenv('PASSBB')
 totp=TOTP(getenv('TOTP'))
-repattern="(\d+,)?\d+.\d+ GB"
+repattern="(\d+,)?(\d+)?.\d+ (GB|MB)"
 bucketsizes=[]
 today = date.today()
 now = datetime.now()
@@ -71,13 +71,24 @@ def bb_parsedata():
             pass          
 
 def bb_returndata():
+    totalsize = 0
+    telegram_messagedata = ""
     for bucket, bucketsize in zip(bucketnames, bucketsizes):
-        print(bucket.text + " is " + bucketsize + " groot.")
-
+        telegram_messagedata += bucket.text + " is " + bucketsize + " groot.\n"
+        if bucketsize[-3:] == " GB":
+            size = float(bucketsize[:-3].replace(',', ''))
+            totalsize += size
+        elif bucketsize[-3:] == " MB":
+            size = bucketsize[:-3].replace(',', '')
+            size = float(size) / 1000
+            totalsize += size
         field_names = ['bucketname','bucketsize','date','time']
         row_dict = {'bucketname': bucket.text,'bucketsize': bucketsize,'date': today,'time': current_time}
         # Append a dict as a row in csv file
         append_dict_as_row('bucketlog.csv', row_dict, field_names)
+    telegram_messagedata += "totale ruimte in gebruik is " + str(round(totalsize, 2)) + " GB."
+    print(telegram_messagedata)
+    telegram_send.send(messages=[telegram_messagedata])
 
 def append_dict_as_row(file_name, dict_of_elem, field_names):
     # Open file in append mode
@@ -96,7 +107,7 @@ def bb_quit():
 
 # login procedure
 bb_login()
-time.sleep(1)
+time.sleep(5)
 bb_login_username()
 time.sleep(5)
 bb_login_password()

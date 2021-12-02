@@ -4,3 +4,5 @@ Simple python tool to login to backblaze, scrape all the bucket sizes and save t
 Usage:
 Place the tool somewhere on your disk, I recommend a linux distro and use crontab to kick it off once in a while.
 Make sure to fill in the .env file correctly.
+
+After pip installing telegram_send, run it once and setup a bot, also needs selenium with chrome webdriver.
