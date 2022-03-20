@@ -8,6 +8,7 @@ Make sure to fill in the .env file correctly.
 After pip installing telegram_send, run it once and setup a bot, also needs selenium with chrome webdriver.
 
 Containerized usage:  
+create .env and telegram-send.conf, you can use the examples and fill them out.
 docker build -t tagname .  
 docker run -d --rm --shm-size=1gb --name runb2usage tagname
   
