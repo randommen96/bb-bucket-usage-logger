@@ -17,6 +17,10 @@ import telegram_send
 chrome_options = Options()
 chrome_options.add_argument("--user-data-dir=selenium_b2use")
 chrome_options.add_argument("--headless")
+chrome_options.add_argument('--disable-gpu')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--window-size=1920,1080')
+
 driver = webdriver.Chrome(options=chrome_options)
 
 # define variables
@@ -88,7 +92,7 @@ def bb_returndata():
         append_dict_as_row('bucketlog.csv', row_dict, field_names)
     telegram_messagedata += "totale ruimte in gebruik is " + str(round(totalsize, 2)) + " GB."
     print(telegram_messagedata)
-    telegram_send.send(messages=[telegram_messagedata])
+    telegram_send.send(messages=[telegram_messagedata], conf="telegram-send.conf")
 
 def append_dict_as_row(file_name, dict_of_elem, field_names):
     # Open file in append mode
